@@ -1,0 +1,520 @@
+<div class="container py-5">
+  <!-- Header Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="text-primary fw-bold"><i class="bi bi-heart me-3"></i>Pet Management</h1>
+          <p class="text-muted mb-0">Manage all pets available for adoption</p>
+        </div>
+        <div class="d-flex gap-2">
+          <a href="/dashboard" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+          </a>
+          <a href="/admin/pets/add" class="btn btn-success">
+            <i class="bi bi-plus-circle me-1"></i>Add New Pet
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pet Statistics - Now with clickable filter buttons -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card bg-primary text-white border-0 shadow-sm filter-card" 
+           data-filter="all">
+        <div class="card-body text-center">
+          <i class="bi bi-heart fs-1 mb-2"></i>
+          <h3 class="fw-bold"><%= pets.length %></h3>
+          <p class="mb-0">All Pets</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-success text-white border-0 shadow-sm filter-card" 
+           data-filter="Dog">
+        <div class="card-body text-center">
+          <i class="bi bi-heart-fill fs-1 mb-2"></i>
+          <h3 class="fw-bold"><%= pets.filter(p => p.type === 'Dog').length %></h3>
+          <p class="mb-0">Dogs</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-info text-white border-0 shadow-sm filter-card" 
+           data-filter="Cat">
+        <div class="card-body text-center">
+          <i class="bi bi-heart-fill fs-1 mb-2"></i>
+          <h3 class="fw-bold"><%= pets.filter(p => p.type === 'Cat').length %></h3>
+          <p class="mb-0">Cats</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-warning text-white border-0 shadow-sm filter-card" 
+           data-filter="other">
+        <div class="card-body text-center">
+          <i class="bi bi-star fs-1 mb-2"></i>
+          <h3 class="fw-bold"><%= pets.filter(p => p.type !== 'Dog' && p.type !== 'Cat').length %></h3>
+          <p class="mb-0">Other Pets</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Filter Display -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="d-flex align-items-center gap-2">
+        <span class="text-muted">Active Filter:</span>
+        <span class="badge bg-primary" id="activeFilter">All Pets</span>
+        <button class="btn btn-sm btn-outline-secondary" id="clearFilter" style="display: none;">
+          <i class="bi bi-x"></i> Clear Filter
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control border-start-0" id="searchPets" 
+                   placeholder="Search pets by name, type, or breed...">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pets Table -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom-0 py-3">
+          <h5 class="mb-0 text-dark">
+            <i class="bi bi-table me-2"></i>All Pets 
+            <span class="badge bg-primary ms-2" id="petCount"><%= pets.length %></span>
+          </h5>
+        </div>
+        <div class="card-body p-0">
+          <% if (pets && pets.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th class="border-0 fw-semibold">
+                      <i class="bi bi-heart me-1"></i>Pet Info
+                    </th>
+                    <th class="border-0 fw-semibold">
+                      <i class="bi bi-camera me-1"></i>Photo
+                    </th>
+                    <th class="border-0 fw-semibold">
+                      <i class="bi bi-info-circle me-1"></i>Details
+                    </th>
+                    <th class="border-0 fw-semibold">
+                      <i class="bi bi-file-text me-1"></i>Description
+                    </th>
+                    <th class="border-0 fw-semibold text-center">
+                      <i class="bi bi-gear me-1"></i>Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% pets.forEach(pet => { %>
+                    <tr class="pet-row" data-pet-type="<%= pet.type %>">
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <div class="me-3">
+                            <% if (pet.type === 'Dog') { %>
+                              <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center pet-type-icon">
+                                <i class="bi bi-heart text-white fs-5"></i>
+                              </div>
+                            <% } else if (pet.type === 'Cat') { %>
+                              <div class="bg-success rounded-circle d-flex align-items-center justify-content-center pet-type-icon">
+                                <i class="bi bi-heart-fill text-white fs-5"></i>
+                              </div>
+                            <% } else { %>
+                              <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center pet-type-icon">
+                                <i class="bi bi-star text-white fs-5"></i>
+                              </div>
+                            <% } %>
+                          </div>
+                          <div>
+                            <h6 class="mb-1 fw-semibold pet-name"><%= pet.name %></h6>
+                            <small class="text-muted">ID: #<%= pet.id %></small>
+                            <br>
+                            <span class="badge bg-<%= pet.type === 'Dog' ? 'primary' : pet.type === 'Cat' ? 'success' : 'warning' %> pet-type">
+                              <%= pet.type %>
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="pet-image-container">
+                          <% if (pet.image) { %>
+                            <img src="<%= pet.image %>" 
+                                 alt="<%= pet.name %>" 
+                                 class="pet-thumbnail rounded"
+                                 onclick="showImageModal('<%= pet.image %>', '<%= pet.name %>')">
+                          <% } else { %>
+                            <div class="no-image-placeholder rounded d-flex align-items-center justify-content-center">
+                              <i class="bi bi-image text-muted fs-3"></i>
+                            </div>
+                          <% } %>
+                        </div>
+                      </td>
+                      <td>
+                        <div>
+                          <div class="pet-breed">
+                            <strong>Breed:</strong> <%= pet.breed %>
+                          </div>
+                          <div class="text-muted">
+                            <i class="bi bi-calendar me-1"></i><strong>Age:</strong> <%= pet.age %> years
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="pet-description-container">
+                          <% if (pet.description && pet.description.length > 80) { %>
+                            <%= pet.description.substring(0, 80) %>...
+                          <% } else { %>
+                            <%= pet.description || 'No description available' %>
+                          <% } %>
+                        </div>
+                      </td>
+                      <td class="text-center">
+                        <div class="btn-group" role="group">
+                          <button class="btn btn-outline-info btn-sm view-pet-btn" 
+                                  data-id="<%= pet.id %>" 
+                                  data-name="<%= pet.name %>" 
+                                  data-type="<%= pet.type %>" 
+                                  data-breed="<%= pet.breed %>" 
+                                  data-age="<%= pet.age %>" 
+                                  data-description="<%= pet.description %>" 
+                                  data-image="<%= pet.image %>">
+                            <i class="bi bi-eye"></i>
+                          </button>
+                          <a href="/admin/pets/edit/<%= pet.id %>" class="btn btn-outline-warning btn-sm">
+                            <i class="bi bi-pencil"></i>
+                          </a>
+                          <button class="btn btn-outline-danger btn-sm delete-pet-btn" 
+                                  data-id="<%= pet.id %>" 
+                                  data-name="<%= pet.name %>">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="text-center py-5">
+              <i class="bi bi-heart text-muted" style="font-size: 4rem;"></i>
+              <h4 class="text-muted mt-3">No Pets Found</h4>
+              <p class="text-muted">No pets have been added yet.</p>
+              <a href="/admin/pets/add" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i>Add First Pet
+              </a>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- View Pet Modal -->
+<div class="modal fade" id="viewPetModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title"><i class="bi bi-eye me-2"></i>Pet Details</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4" id="viewPetContent">
+        <!-- Content will be populated by JavaScript -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header">
+        <h5 class="modal-title" id="imageModalTitle">Pet Photo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center p-0">
+        <img id="modalImage" src="" alt="" class="img-fluid modal-pet-image">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deletePetModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title"><i class="bi bi-exclamation-triangle me-2"></i>Confirm Delete</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="text-center">
+          <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+          <h5 class="mt-3">Are you sure?</h5>
+          <p class="text-muted">Do you want to delete pet <strong id="deletePetName"></strong>?</p>
+          <p class="text-danger small">This action cannot be undone!</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form action="/admin/pets/delete/" method="POST" id="deletePetForm" style="display: inline;">
+          <button type="submit" class="btn btn-danger">
+            <i class="bi bi-trash me-1"></i>Yes, Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentFilter = 'all';
+
+// Filter functionality
+document.querySelectorAll('.filter-card').forEach(card => {
+  card.addEventListener('click', function() {
+    const filterType = this.getAttribute('data-filter');
+    filterPets(filterType);
+    
+    // Update active filter display
+    updateActiveFilter(filterType);
+    
+    // Visual feedback
+    document.querySelectorAll('.filter-card').forEach(c => c.style.opacity = '0.7');
+    this.style.opacity = '1';
+    
+    setTimeout(() => {
+      document.querySelectorAll('.filter-card').forEach(c => c.style.opacity = '1');
+    }, 300);
+  });
+});
+
+function filterPets(filterType) {
+  const rows = document.querySelectorAll('.pet-row');
+  let visibleCount = 0;
+  currentFilter = filterType;
+  
+  rows.forEach(row => {
+    const petType = row.getAttribute('data-pet-type');
+    let shouldShow = false;
+    
+    if (filterType === 'all') {
+      shouldShow = true;
+    } else if (filterType === 'other') {
+      shouldShow = petType !== 'Dog' && petType !== 'Cat';
+    } else {
+      shouldShow = petType === filterType;
+    }
+    
+    if (shouldShow) {
+      row.style.display = '';
+      visibleCount++;
+    } else {
+      row.style.display = 'none';
+    }
+  });
+  
+  document.getElementById('petCount').textContent = visibleCount;
+  
+  // Apply search filter if there's a search term
+  const searchTerm = document.getElementById('searchPets').value;
+  if (searchTerm) {
+    searchPets();
+  }
+}
+
+function updateActiveFilter(filterType) {
+  const activeFilterElement = document.getElementById('activeFilter');
+  const clearFilterButton = document.getElementById('clearFilter');
+  
+  let filterText = '';
+  let badgeClass = 'bg-primary';
+  
+  switch(filterType) {
+    case 'all':
+      filterText = 'All Pets';
+      badgeClass = 'bg-primary';
+      clearFilterButton.style.display = 'none';
+      break;
+    case 'Dog':
+      filterText = 'Dogs Only';
+      badgeClass = 'bg-success';
+      clearFilterButton.style.display = 'inline-block';
+      break;
+    case 'Cat':
+      filterText = 'Cats Only';
+      badgeClass = 'bg-info';
+      clearFilterButton.style.display = 'inline-block';
+      break;
+    case 'other':
+      filterText = 'Other Pets Only';
+      badgeClass = 'bg-warning';
+      clearFilterButton.style.display = 'inline-block';
+      break;
+  }
+  
+  activeFilterElement.textContent = filterText;
+  activeFilterElement.className = `badge ${badgeClass}`;
+}
+
+// Clear filter functionality
+document.getElementById('clearFilter').addEventListener('click', function() {
+  filterPets('all');
+  updateActiveFilter('all');
+  document.getElementById('searchPets').value = '';
+});
+
+// Enhanced search functionality that works with filters
+function searchPets() {
+  const searchTerm = document.getElementById('searchPets').value.toLowerCase();
+  const rows = document.querySelectorAll('.pet-row');
+  let visibleCount = 0;
+  
+  rows.forEach(row => {
+    const petType = row.getAttribute('data-pet-type');
+    const name = row.querySelector('.pet-name').textContent.toLowerCase();
+    const type = row.querySelector('.pet-type').textContent.toLowerCase();
+    const breed = row.querySelector('.pet-breed').textContent.toLowerCase();
+    
+    // Check if row matches current filter
+    let matchesFilter = false;
+    if (currentFilter === 'all') {
+      matchesFilter = true;
+    } else if (currentFilter === 'other') {
+      matchesFilter = petType !== 'Dog' && petType !== 'Cat';
+    } else {
+      matchesFilter = petType === currentFilter;
+    }
+    
+    // Check if row matches search term
+    const matchesSearch = searchTerm === '' || 
+                         name.includes(searchTerm) || 
+                         type.includes(searchTerm) || 
+                         breed.includes(searchTerm);
+    
+    if (matchesFilter && matchesSearch) {
+      row.style.display = '';
+      visibleCount++;
+    } else {
+      row.style.display = 'none';
+    }
+  });
+  
+  document.getElementById('petCount').textContent = visibleCount;
+}
+
+// Search functionality
+document.getElementById('searchPets').addEventListener('input', searchPets);
+
+// Show image modal
+function showImageModal(imageSrc, petName) {
+  document.getElementById('modalImage').src = imageSrc;
+  document.getElementById('imageModalTitle').textContent = petName + ' - Photo';
+  new bootstrap.Modal(document.getElementById('imageModal')).show();
+}
+
+// View pet function
+function viewPet(id, name, type, breed, age, description, image) {
+  const content = `
+    <div class="row">
+      <div class="col-md-4 text-center">
+        ${image ? 
+          `<img src="${image}" alt="${name}" class="img-fluid rounded shadow-sm mb-3" style="max-height: 300px; object-fit: cover;">` :
+          `<div class="bg-light rounded d-flex align-items-center justify-content-center mb-3" style="height: 200px;">
+            <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+          </div>`
+        }
+      </div>
+      <div class="col-md-8">
+        <h4 class="text-primary mb-3">${name}</h4>
+        <div class="row">
+          <div class="col-6 mb-3">
+            <strong><i class="bi bi-tag me-1"></i>Type:</strong><br>
+            <span class="badge bg-${type === 'Dog' ? 'primary' : type === 'Cat' ? 'success' : 'warning'} fs-6">${type}</span>
+          </div>
+          <div class="col-6 mb-3">
+            <strong><i class="bi bi-award me-1"></i>Breed:</strong><br>
+            <span class="text-muted">${breed}</span>
+          </div>
+          <div class="col-6 mb-3">
+            <strong><i class="bi bi-calendar me-1"></i>Age:</strong><br>
+            <span class="text-muted">${age} years old</span>
+          </div>
+          <div class="col-6 mb-3">
+            <strong><i class="bi bi-hash me-1"></i>Pet ID:</strong><br>
+            <span class="text-muted">#${id}</span>
+          </div>
+          <div class="col-12">
+            <strong><i class="bi bi-file-text me-1"></i>Description:</strong><br>
+            <p class="text-muted">${description || 'No description available'}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('viewPetContent').innerHTML = content;
+  new bootstrap.Modal(document.getElementById('viewPetModal')).show();
+}
+
+// Delete pet function
+function deletePet(id, name) {
+  document.getElementById('deletePetName').textContent = name;
+  document.getElementById('deletePetForm').action = `/admin/pets/delete/${id}`;
+  new bootstrap.Modal(document.getElementById('deletePetModal')).show();
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+  // View pet buttons
+  document.querySelectorAll('.view-pet-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const id = this.dataset.id;
+      const name = this.dataset.name;
+      const type = this.dataset.type;
+      const breed = this.dataset.breed;
+      const age = this.dataset.age;
+      const description = this.dataset.description;
+      const image = this.dataset.image;
+      viewPet(id, name, type, breed, age, description, image);
+    });
+  });
+
+  // Delete pet buttons
+  document.querySelectorAll('.delete-pet-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const id = this.dataset.id;
+      const name = this.dataset.name;
+      deletePet(id, name);
+    });
+  });
+});
+</script>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">

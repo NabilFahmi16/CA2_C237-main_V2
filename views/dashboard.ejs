@@ -1,0 +1,131 @@
+<div class="container py-5">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="text-center fw-bold text-primary display-4 mb-2">Admin Dashboard</h1>
+      <p class="text-center text-muted fs-5">Welcome, Admin! Here's a quick overview.</p>
+    </div>
+  </div>
+
+  <!-- Summary Stats Cards -->
+<div class="row mb-5 g-4 justify-content-center">
+  <div class="col-md-4">
+    <div class="card border-0 shadow-lg h-100">
+      <div class="card-body text-center">
+        <h5 class="card-title mt-2">Total Pets</h5>
+        <div class="bg-primary bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:70px; height:70px; font-size:2rem;">
+          <span class="text-white fw-bold"><%= stats.totalPets %></span>
+        </div>
+        <div>
+          <i class="bi bi-paw fs-1 text-primary"></i>
+        </div>
+        <a href="/admin/pets" class="btn btn-outline-primary btn-lg mt-3 shadow-sm w-100"><i class="bi bi-paw me-1"></i> Manage Pets</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card border-0 shadow-lg h-100">
+      <div class="card-body text-center">
+        <h5 class="card-title mt-2">Total Users</h5>
+        <div class="bg-success bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:70px; height:70px; font-size:2rem;">
+          <span class="text-white fw-bold"><%= stats.totalUsers %></span>
+        </div>
+        <a href="/admin/users" class="btn btn-outline-success btn-lg mt-3 shadow-sm w-100">Manage Users</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card border-0 shadow-lg h-100">
+      <div class="card-body text-center">
+        <h5 class="card-title mt-2">Total Appointments</h5>
+        <div class="bg-info bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:70px; height:70px; font-size:2rem;">
+          <span class="text-white fw-bold"><%= stats.totalAppointments %></span>
+        </div>
+        <a href="/admin/appointments" class="btn btn-outline-info btn-lg mt-3 shadow-sm w-100">Manage Appointments</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Recent Appointments Table -->
+<div class="row">
+  <div class="col-12">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <h3 class="mb-4 text-primary"><i class="bi bi-calendar-check me-2"></i>Top 5 Recent Appointments</h3>
+        <% if (recentAppointments.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-primary">
+              <tr>
+                <th>User Name</th>
+                <th>Phone Number</th>
+                <th>Date/Time</th>
+                <th>Pet</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% recentAppointments.forEach(appt => { %>
+                <tr>
+                  <td><strong><%= appt.user_name || 'Unknown User' %></strong></td>
+                  <td>
+                    <% if (appt.user_phone) { %>
+                      <a href="tel:<%= appt.user_phone %>" class="text-decoration-none">
+                        <i class="bi bi-telephone me-1"></i><%= appt.user_phone %>
+                      </a>
+                    <% } else { %>
+                      <span class="text-muted">No phone</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <%= new Date(appt.appointment_dt).toLocaleDateString('en-US', { 
+                      weekday: 'short', 
+                      year: 'numeric', 
+                      month: 'short', 
+                      day: 'numeric' 
+                    }) %><br>
+                    <small class="text-muted">
+                      <i class="bi bi-clock me-1"></i>
+                      <%= new Date(appt.appointment_dt).toLocaleTimeString('en-US', { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                      }) %>
+                    </small>
+                  </td>
+                  <td>
+                    <%= appt.pet_name || 'Unknown Pet' %>
+                  </td>
+                  <td>
+                    <% if (appt.status === 'scheduled') { %>
+                      <span class="badge bg-success">
+                        <i class="bi bi-calendar-check me-1"></i>Scheduled
+                      </span>
+                    <% } else if (appt.status === 'cancelled') { %>
+                      <span class="badge bg-danger">
+                        <i class="bi bi-x-circle me-1"></i>Cancelled
+                      </span>
+                    <% } else if (appt.status === 'completed') { %>
+                      <span class="badge bg-info">
+                        <i class="bi bi-check-circle me-1"></i>Completed
+                      </span>
+                    <% } else { %>
+                      <span class="badge bg-warning text-dark"><%= appt.status %></span>
+                    <% } %>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="text-center py-4">
+            <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
+            <h5 class="text-muted mt-3">No appointments yet</h5>
+            <p class="text-muted">Appointments will appear here once users start booking.</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

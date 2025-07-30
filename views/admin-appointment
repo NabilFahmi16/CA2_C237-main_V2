@@ -1,0 +1,401 @@
+<div class="container py-5">
+  <!-- Header Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="fw-bold"><i class="bi bi-calendar-event me-3"></i>Appointment Management</h1>
+          <p class="text-muted mb-0">Manage all appointment bookings</p>
+        </div>
+        <div class="d-flex gap-2">
+          <a href="/dashboard" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Appointments Statistics - Now with clickable filter buttons -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card bg-primary text-white border-0 shadow-sm filter-card" 
+           data-filter="all">
+        <div class="card-body text-center">
+          <i class="bi bi-calendar-event fs-1 mb-2"></i>
+          <h3 class="fw-bold"><%= appointments.length %></h3>
+          <p class="mb-0">All Appointments</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-success text-white border-0 shadow-sm filter-card" 
+           data-filter="scheduled">
+        <div class="card-body text-center">
+          <i class="bi bi-calendar-check fs-1 mb-2"></i>
+          <h3 class="fw-bold"><%= appointments.filter(a => a.status === 'scheduled').length %></h3>
+          <p class="mb-0">Scheduled</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-info text-white border-0 shadow-sm filter-card" 
+           data-filter="completed">
+        <div class="card-body text-center">
+          <i class="bi bi-check-circle fs-1 mb-2"></i>
+          <h3 class="fw-bold"><%= appointments.filter(a => a.status === 'completed').length %></h3>
+          <p class="mb-0">Completed</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-danger text-white border-0 shadow-sm filter-card" 
+           data-filter="cancelled">
+        <div class="card-body text-center">
+          <i class="bi bi-x-circle fs-1 mb-2"></i>
+          <h3 class="fw-bold"><%= appointments.filter(a => a.status === 'cancelled').length %></h3>
+          <p class="mb-0">Cancelled</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Filter Display -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="d-flex align-items-center gap-2">
+        <span class="text-muted">Active Filter:</span>
+        <span class="badge bg-primary" id="activeFilter">All Appointments</span>
+        <button class="btn btn-sm btn-outline-secondary" id="clearFilter" style="display: none;">
+          <i class="bi bi-x"></i> Clear Filter
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control border-start-0" id="searchAppointments" 
+                   placeholder="Search by user name, pet name, or email...">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Appointments Table -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom-0 py-3">
+          <h5 class="mb-0 text-dark">
+            <i class="bi bi-table me-2"></i>All Appointments 
+            <span class="badge bg-primary ms-2" id="appointmentCount"><%= appointments.length %></span>
+          </h5>
+        </div>
+        <div class="card-body p-0">
+          <% if (appointments && appointments.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th class="border-0 fw-semibold">
+                      <i class="bi bi-person me-1"></i>User
+                    </th>
+                    <th class="border-0 fw-semibold">
+                      <i class="bi bi-heart me-1"></i>Pet
+                    </th>
+                    <th class="border-0 fw-semibold">
+                      <i class="bi bi-calendar me-1"></i>Date & Time
+                    </th>
+                    <th class="border-0 fw-semibold">
+                      <i class="bi bi-info-circle me-1"></i>Status
+                    </th>
+                    <th class="border-0 fw-semibold text-center">
+                      <i class="bi bi-gear me-1"></i>Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% appointments.forEach(appointment => { %>
+                    <tr class="appointment-row" data-status="<%= appointment.status %>">
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <div class="appointment-user-avatar bg-primary rounded-circle d-flex align-items-center justify-content-center me-3">
+                            <span class="text-white fw-bold">
+                              <%= appointment.user_name ? appointment.user_name.charAt(0).toUpperCase() : 'U' %>
+                            </span>
+                          </div>
+                          <div>
+                            <h6 class="mb-1 fw-semibold user-name"><%= appointment.user_name || 'Unknown User' %></h6>
+                            <small class="text-muted user-email">
+                              <i class="bi bi-envelope me-1"></i><%= appointment.user_email || 'No email' %>
+                            </small>
+                            <% if (appointment.user_phone) { %>
+                              <br><small class="text-muted">
+                                <i class="bi bi-telephone me-1"></i><%= appointment.user_phone %>
+                              </small>
+                            <% } %>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div>
+                          <h6 class="mb-1 fw-semibold pet-name"><%= appointment.pet_name || 'Unknown Pet' %></h6>
+                          <small class="text-muted">
+                            <i class="bi bi-tag me-1"></i><%= appointment.pet_type || 'Unknown Type' %>
+                          </small>
+                        </div>
+                      </td>
+                      <td>
+                        <div>
+                          <span class="fw-semibold">
+                            <%= new Date(appointment.appointment_dt).toLocaleDateString('en-US', {
+                              weekday: 'short',
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric'
+                            }) %>
+                          </span>
+                          <br>
+                          <small class="text-muted">
+                            <i class="bi bi-clock me-1"></i>
+                            <%= new Date(appointment.appointment_dt).toLocaleTimeString('en-US', {
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            }) %>
+                          </small>
+                        </div>
+                      </td>
+                      <td>
+                        <% if (appointment.status === 'scheduled') { %>
+                          <span class="badge bg-success fs-6 appointment-status">
+                            <i class="bi bi-calendar-check me-1"></i>Scheduled
+                          </span>
+                        <% } else if (appointment.status === 'cancelled') { %>
+                          <span class="badge bg-danger fs-6 appointment-status">
+                            <i class="bi bi-x-circle me-1"></i>Cancelled
+                          </span>
+                        <% } else if (appointment.status === 'completed') { %>
+                          <span class="badge bg-info fs-6 appointment-status">
+                            <i class="bi bi-check-circle me-1"></i>Completed
+                          </span>
+                        <% } else { %>
+                          <span class="badge bg-warning text-dark fs-6 appointment-status"><%= appointment.status %></span>
+                        <% } %>
+                      </td>
+                      <td class="text-center">
+                        <div class="btn-group" role="group">
+                          <!-- Edit Button -->
+                          <a href="/admin/appointments/edit/<%= appointment.id %>" class="btn btn-outline-warning btn-sm">
+                            <i class="bi bi-pencil"></i>
+                          </a>
+                          
+                          <!-- Status Update Buttons -->
+                          <div class="btn-group" role="group">
+                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" 
+                                    data-bs-toggle="dropdown">
+                              <i class="bi bi-gear"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                              <li>
+                                <form action="/admin/appointments/status/<%= appointment.id %>" method="POST" style="display: inline;">
+                                  <input type="hidden" name="status" value="scheduled">
+                                  <button type="submit" class="dropdown-item">
+                                    <i class="bi bi-calendar-check me-1"></i>Mark Scheduled
+                                  </button>
+                                </form>
+                              </li>
+                              <li>
+                                <form action="/admin/appointments/status/<%= appointment.id %>" method="POST" style="display: inline;">
+                                  <input type="hidden" name="status" value="completed">
+                                  <button type="submit" class="dropdown-item">
+                                    <i class="bi bi-check-circle me-1"></i>Mark Completed
+                                  </button>
+                                </form>
+                              </li>
+                              <li>
+                                <form action="/admin/appointments/status/<%= appointment.id %>" method="POST" style="display: inline;">
+                                  <input type="hidden" name="status" value="cancelled">
+                                  <button type="submit" class="dropdown-item">
+                                    <i class="bi bi-x-circle me-1"></i>Mark Cancelled
+                                  </button>
+                                </form>
+                              </li>
+                              <li><hr class="dropdown-divider"></li>
+                              <li>
+                                <form action="/admin/appointments/delete/<%= appointment.id %>" method="POST" 
+                                      style="display: inline;" 
+                                      onsubmit="return confirm('Are you sure you want to delete this appointment?')">
+                                  <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bi bi-trash me-1"></i>Delete
+                                  </button>
+                                </form>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="text-center py-5">
+              <i class="bi bi-calendar-x text-muted" style="font-size: 4rem;"></i>
+              <h4 class="text-muted mt-3">No Appointments Found</h4>
+              <p class="text-muted">No appointments have been booked yet.</p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentFilter = 'all';
+
+// Filter functionality
+document.querySelectorAll('.filter-card').forEach(card => {
+  card.addEventListener('click', function() {
+    const filterType = this.getAttribute('data-filter');
+    filterAppointments(filterType);
+    
+    // Update active filter display
+    updateActiveFilter(filterType);
+    
+    // Visual feedback
+    document.querySelectorAll('.filter-card').forEach(c => c.style.opacity = '0.7');
+    this.style.opacity = '1';
+    
+    setTimeout(() => {
+      document.querySelectorAll('.filter-card').forEach(c => c.style.opacity = '1');
+    }, 300);
+  });
+});
+
+function filterAppointments(filterType) {
+  const rows = document.querySelectorAll('.appointment-row');
+  let visibleCount = 0;
+  currentFilter = filterType;
+  
+  rows.forEach(row => {
+    const appointmentStatus = row.getAttribute('data-status');
+    let shouldShow = false;
+    
+    if (filterType === 'all') {
+      shouldShow = true;
+    } else {
+      shouldShow = appointmentStatus === filterType;
+    }
+    
+    if (shouldShow) {
+      row.style.display = '';
+      visibleCount++;
+    } else {
+      row.style.display = 'none';
+    }
+  });
+  
+  document.getElementById('appointmentCount').textContent = visibleCount;
+  
+  // Apply search filter if there's a search term
+  const searchTerm = document.getElementById('searchAppointments').value;
+  if (searchTerm) {
+    searchAppointments();
+  }
+}
+
+function updateActiveFilter(filterType) {
+  const activeFilterElement = document.getElementById('activeFilter');
+  const clearFilterButton = document.getElementById('clearFilter');
+  
+  let filterText = '';
+  let badgeClass = 'bg-primary';
+  
+  switch(filterType) {
+    case 'all':
+      filterText = 'All Appointments';
+      badgeClass = 'bg-primary';
+      clearFilterButton.style.display = 'none';
+      break;
+    case 'scheduled':
+      filterText = 'Scheduled Only';
+      badgeClass = 'bg-success';
+      clearFilterButton.style.display = 'inline-block';
+      break;
+    case 'completed':
+      filterText = 'Completed Only';
+      badgeClass = 'bg-info';
+      clearFilterButton.style.display = 'inline-block';
+      break;
+    case 'cancelled':
+      filterText = 'Cancelled Only';
+      badgeClass = 'bg-danger';
+      clearFilterButton.style.display = 'inline-block';
+      break;
+  }
+  
+  activeFilterElement.textContent = filterText;
+  activeFilterElement.className = `badge ${badgeClass}`;
+}
+
+// Clear filter functionality
+document.getElementById('clearFilter').addEventListener('click', function() {
+  filterAppointments('all');
+  updateActiveFilter('all');
+  document.getElementById('searchAppointments').value = '';
+});
+
+// Enhanced search functionality that works with filters
+function searchAppointments() {
+  const searchTerm = document.getElementById('searchAppointments').value.toLowerCase();
+  const rows = document.querySelectorAll('.appointment-row');
+  let visibleCount = 0;
+  
+  rows.forEach(row => {
+    const appointmentStatus = row.getAttribute('data-status');
+    const userName = row.querySelector('.user-name').textContent.toLowerCase();
+    const userEmail = row.querySelector('.user-email').textContent.toLowerCase();
+    const petName = row.querySelector('.pet-name').textContent.toLowerCase();
+    
+    // Check if row matches current filter
+    let matchesFilter = false;
+    if (currentFilter === 'all') {
+      matchesFilter = true;
+    } else {
+      matchesFilter = appointmentStatus === currentFilter;
+    }
+    
+    // Check if row matches search term
+    const matchesSearch = searchTerm === '' || 
+                         userName.includes(searchTerm) || 
+                         userEmail.includes(searchTerm) || 
+                         petName.includes(searchTerm);
+    
+    if (matchesFilter && matchesSearch) {
+      row.style.display = '';
+      visibleCount++;
+    } else {
+      row.style.display = 'none';
+    }
+  });
+  
+  document.getElementById('appointmentCount').textContent = visibleCount;
+}
+
+// Search functionality
+document.getElementById('searchAppointments').addEventListener('input', searchAppointments);
+</script>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">

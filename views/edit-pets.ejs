@@ -1,0 +1,240 @@
+<div class="container py-5">
+  <!-- Header Section -->
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary"><i class="bi bi-pencil-square me-2"></i>Edit Pet Details</h1>
+        <a href="/admin/pets" class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-left me-1"></i>Back to Pets
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Messages -->
+  <% if (error) { %>
+    <div class="row">
+      <div class="col-12">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="bi bi-exclamation-triangle me-2"></i><%= error %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- Edit Form -->
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0"><i class="bi bi-heart me-2"></i>Editing: <%= pet.name %></h3>
+        </div>
+        <div class="card-body p-4">
+          <form method="POST" action="/admin/pets/edit/<%= pet.id %>" enctype="multipart/form-data">
+            <div class="row">
+              <!-- Left Column - Photo Section -->
+              <div class="col-md-4 mb-4">
+                <div class="text-center">
+                  <h5 class="mb-3">Pet Photo</h5>
+                  
+                  <!-- Current Photo Preview -->
+                  <div class="photo-preview mb-3">
+                    <% if (pet.image) { %>
+                      <img id="currentPhoto" src="<%= pet.image.startsWith('/') ? pet.image : '/images/animals/' + pet.image %>" 
+                          alt="<%= pet.name %>" class="img-fluid rounded-3 shadow edit-pet-photo">
+                    <% } else { %>
+                      <div id="currentPhoto" class="bg-light rounded-3 d-flex align-items-center justify-content-center shadow edit-pet-photo-placeholder">
+                        <div class="text-center text-muted">
+                          <i class="bi bi-image fs-1"></i>
+                          <p class="mt-2 mb-0">No photo uploaded</p>
+                        </div>
+                      </div>
+                    <% } %>
+                  </div>
+
+                  <!-- Photo Upload Options -->
+                  <div class="mb-3">
+                    <label for="photoFile" class="form-label">Upload New Photo:</label>
+                    <input type="file" class="form-control" id="photoFile" name="photoFile" 
+                           accept="image/*" onchange="previewPhoto(this)">
+                    <div class="form-text">Supported: JPG, PNG, GIF (Max 5MB)</div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="image" class="form-label">Or Enter Photo URL:</label>
+                    <input type="url" class="form-control" id="image" name="image" 
+                           value="<%= pet.image || '' %>" placeholder="https://example.com/photo.jpg"
+                           onchange="previewFromURL(this)">
+                  </div>
+
+                  <button type="button" class="btn btn-outline-danger btn-sm" onclick="removePhoto()">
+                    <i class="bi bi-trash me-1"></i>Remove Photo
+                  </button>
+                </div>
+              </div>
+
+              <!-- Right Column - Pet Details -->
+              <div class="col-md-8">
+                <div class="row">
+                  <!-- Pet Name -->
+                  <div class="col-md-6 mb-3">
+                    <label for="name" class="form-label"><strong>Pet Name <span class="text-danger">*</span></strong></label>
+                    <input type="text" class="form-control form-control-lg" id="name" name="name" 
+                           value="<%= pet.name %>" required placeholder="Enter pet name">
+                  </div>
+
+                  <!-- Pet Type -->
+                  <div class="col-md-6 mb-3">
+                    <label for="type" class="form-label"><strong>Pet Type <span class="text-danger">*</span></strong></label>
+                    <select class="form-select form-select-lg" id="type" name="type" required>
+                      <option value="">Select pet type...</option>
+                      <option value="Dog" <%= pet.type === 'Dog' ? 'selected' : '' %>>Dog</option>
+                      <option value="Cat" <%= pet.type === 'Cat' ? 'selected' : '' %>>Cat</option>
+                      <option value="Others" <%= pet.type === 'Others' ? 'selected' : '' %>>Others</option>
+                    </select>
+                  </div>
+
+                  <!-- Pet Breed -->
+                  <div class="col-md-6 mb-3">
+                    <label for="breed" class="form-label"><strong>Breed <span class="text-danger">*</span></strong></label>
+                    <input type="text" class="form-control" id="breed" name="breed" 
+                           value="<%= pet.breed %>" required placeholder="Enter breed">
+                  </div>
+
+                  <!-- Pet Age -->
+                  <div class="col-md-6 mb-3">
+                    <label for="age" class="form-label"><strong>Age (years) <span class="text-danger">*</span></strong></label>
+                    <input type="number" class="form-control" id="age" name="age" 
+                           value="<%= pet.age %>" required min="0" max="30" placeholder="Enter age">
+                  </div>
+
+                  <!-- Pet Description -->
+                  <div class="col-12 mb-4">
+                    <label for="description" class="form-label"><strong>Description</strong></label>
+                    <textarea class="form-control" id="description" name="description" rows="6" 
+                              placeholder="Tell us about this pet's personality, habits, special needs, etc..."><%= pet.description || '' %></textarea>
+                    <div class="form-text">Share details that will help potential adopters connect with this pet.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="row">
+              <div class="col-12">
+                <hr class="my-4">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="text-muted">
+                    <small><span class="text-danger">*</span> Required fields</small>
+                  </div>
+                  <div class="d-flex gap-2">
+                    <a href="/admin/pets" class="btn btn-outline-secondary btn-lg">
+                      <i class="bi bi-x-circle me-1"></i>Cancel
+                    </a>
+                    <button type="submit" class="btn btn-success btn-lg">
+                      <i class="bi bi-check-circle me-1"></i>Update Pet
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Photo Preview JavaScript -->
+<script>
+function previewPhoto(input) {
+  const file = input.files[0];
+  const preview = document.getElementById('currentPhoto');
+  
+  if (file) {
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size must be less than 5MB');
+      input.value = '';
+      return;
+    }
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file');
+      input.value = '';
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      // Replace the entire preview content with the new image
+      preview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="img-fluid rounded-3 shadow edit-pet-photo">`;
+    };
+    reader.readAsDataURL(file);
+    
+    // Clear URL input when file is selected
+    document.getElementById('image').value = '';
+  }
+}
+
+function previewFromURL(input) {
+  const url = input.value;
+  const preview = document.getElementById('currentPhoto');
+  
+  if (url) {
+    // Test if URL is valid image
+    const img = new Image();
+    img.onload = function() {
+      // Replace the entire preview content with the new image
+      preview.innerHTML = `<img src="${url}" alt="Preview" class="img-fluid rounded-3 shadow edit-pet-photo">`;
+    };
+    img.onerror = function() {
+      alert('Invalid image URL. Please check the link.');
+      input.value = '';
+    };
+    img.src = url;
+    
+    // Clear file input when URL is entered
+    document.getElementById('photoFile').value = '';
+  }
+}
+
+function removePhoto() {
+  const preview = document.getElementById('currentPhoto');
+  preview.innerHTML = `
+    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center shadow edit-pet-photo-placeholder">
+      <div class="text-center text-muted">
+        <i class="bi bi-image fs-1"></i>
+        <p class="mt-2 mb-0">No photo uploaded</p>
+      </div>
+    </div>
+  `;
+  document.getElementById('photoFile').value = '';
+  document.getElementById('image').value = '';
+}
+
+// Form validation
+document.querySelector('form').addEventListener('submit', function(e) {
+  const name = document.getElementById('name').value.trim();
+  const type = document.getElementById('type').value;
+  const breed = document.getElementById('breed').value.trim();
+  const age = document.getElementById('age').value;
+  
+  if (!name || !type || !breed || !age) {
+    e.preventDefault();
+    alert('Please fill in all required fields');
+    return false;
+  }
+  
+  if (age < 0 || age > 30) {
+    e.preventDefault();
+    alert('Age must be between 0 and 30 years');
+    return false;
+  }
+});
+</script>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">

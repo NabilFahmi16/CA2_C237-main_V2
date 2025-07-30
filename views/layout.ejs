@@ -1,0 +1,69 @@
+<!-- layout.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | Pet Adoption</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="py-3 fixed-top" style="background-color: #111;">
+  <div class="container d-flex justify-content-between align-items-center">
+    <a href="/" class="h3 m-0 text-white text-decoration-none">🐾 <span class="fw-bold">PetAdopt</span></a>
+    <nav class="d-flex align-items-center gap-2">
+      <% if (typeof user !== 'undefined' && user) { %>
+        <% if (user.admin) { %>
+          <!-- Admin Navigation -->
+          <% if (title === 'Home') { %>
+            <a href="/dashboard" class="btn btn-warning rounded-pill px-3 fw-semibold">
+              <i class="bi bi-speedometer2 me-1"></i>Dashboard
+            </a>
+          <% } else if (title !== 'Admin Dashboard') { %>
+            <a href="/dashboard" class="btn btn-outline-light rounded-pill px-3 fw-semibold">
+              <i class="bi bi-speedometer2 me-1"></i>Dashboard
+            </a>
+          <% } %>
+          <% if (title !== 'Home') { %>
+            <a href="/" class="btn btn-outline-light rounded-pill px-3 fw-semibold">Home</a>
+          <% } %>
+        <% } else { %>
+          <!-- Regular User Navigation -->
+          <% if (title === 'My Profile') { %>
+            <a href="/pets" class="btn btn-outline-light rounded-pill px-3 fw-semibold">Pets</a>
+          <% } else { %>
+            <a href="/profile" class="btn btn-outline-light rounded-pill px-3 fw-semibold">Profile</a>
+          <% } %>
+        <% } %>
+        <a href="/logout" class="btn btn-light text-dark rounded-pill px-3 fw-semibold">Logout</a>
+      <% } else { %>
+        <!-- Guest Navigation -->
+        <% if (title !== 'Login') { %>
+          <a href="/login" class="btn btn-outline-light rounded-pill px-3 fw-semibold">Login</a>
+        <% } %>
+        <% if (title !== 'Register') { %>
+          <a href="/register" class="btn btn-outline-light rounded-pill px-3 fw-semibold">Register</a>
+        <% } %>
+        <% if (title !== 'Browse Pets') { %>
+          <a href="/pets" class="btn btn-outline-light rounded-pill px-3 fw-semibold">Pets</a>
+        <% } %>
+      <% } %>
+    </nav>
+  </div>
+</header>
+<div style="height:72px"></div>
+
+  <main>
+    <%- body %>
+  </main>
+
+  <footer class="bg-light text-center py-3 mt-4">
+    <p class="mb-0">© <%= new Date().getFullYear() %> Pet Adoption Platform | Team Nabil</p>
+  </footer>
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

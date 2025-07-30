@@ -1,0 +1,80 @@
+<div class="container-fluid px-0">
+
+  <!-- 🖼 Carousel -->
+  <div id="petCarousel" class="carousel slide carousel-fade mb-5" data-bs-ride="carousel" data-bs-interval="3000">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img src="/images/carousel/AdoptionDrive.png" class="d-block w-100" alt="Adoption Drive">
+      </div>
+      <div class="carousel-item">
+        <img src="/images/carousel/carouselDog.jpg" class="d-block w-100" alt="Dog 1">
+      </div>
+      <div class="carousel-item">
+        <img src="/images/carousel/catsNdogs.jpg" class="d-block w-100" alt="Cats and Dogs">
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#petCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#petCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+</div>
+
+<!-- 🏡 Hero Content -->
+<div class="container py-5">
+  <div class="text-center mb-5">
+    <h1 class="display-4 fw-bold hero-title">🐾 Welcome to Pet Adoption!</h1>
+    <p class="lead hero-subtext">
+      Find your perfect furry friend and give them a loving forever home 
+      <span style="color: #e25555;">❤️</span>
+    </p>
+  </div>
+
+  <div class="text-center mb-5">
+    <a href="/pets" class="btn btn-lg rounded-pill mx-2 px-4 fw-bold text-white"
+       style="background: #111; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.12); transition: background 0.2s;">
+      <i class="bi bi-search me-2"></i>Browse Pets
+    </a>
+    <a href="/register" class="btn btn-lg rounded-pill mx-2 px-4 fw-bold text-white"
+       style="background: #222; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.12); transition: background 0.2s;">
+      <i class="bi bi-person-plus me-2"></i>Register today!
+    </a>
+  </div>
+
+  <hr class="my-5">
+
+  <!-- 🐶 Recently Viewed Pets -->
+  <h2 class="text-center mb-4">🐾 Recently Viewed Pets</h2>
+  <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+    <% if (recentlyViewedPets && recentlyViewedPets.length > 0) { %>
+      <% recentlyViewedPets.forEach(pet => { %>
+        <div class="col d-flex flex-column align-items-center">
+          <img src="<%= pet.image %>" alt="<%= pet.name %>" class="rounded shadow-sm"
+               style="width: 260px; aspect-ratio: 1/1; object-fit: cover;">
+          <h3 class="fw-bold text-center mt-3 mb-0"><%= pet.name %></h3>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <div class="col-12 text-center text-muted">No recently viewed pets yet.</div>
+    <% } %>
+  </div>
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Carousel init
+    const carousel = new bootstrap.Carousel('#petCarousel', {
+      interval: 3000,
+      ride: 'carousel',
+      pause: false,
+      wrap: true
+    });
+  });
+</script>

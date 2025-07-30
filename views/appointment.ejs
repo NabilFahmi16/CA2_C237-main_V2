@@ -1,0 +1,373 @@
+<div class="container py-5">
+  <!-- Header Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="text-primary fw-bold">
+            <i class="bi bi-calendar-event me-3"></i>Book Appointment
+          </h1>
+          <p class="text-muted mb-0">Schedule a visit with <%= pet.name %></p>
+        </div>
+        <a href="/pets/<%= pet.id %>" class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-left me-1"></i>Back to Pet Details
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flash Messages -->
+  <% for (let type in messages) { messages[type].forEach(msg => { %>
+    <div class="alert alert-<%= (type === 'danger' ? 'danger' : type === 'success' ? 'success' : 'info') %> alert-dismissible fade show shadow-sm rounded-3" role="alert">
+      <i class="bi bi-<%= type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-triangle' : 'info-circle' %> me-2"></i>
+      <%= msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% }) } %>
+
+  <!-- Check if pet exists -->
+  <% if (!pet) { %>
+    <div class="row">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body text-center py-5">
+            <i class="bi bi-exclamation-triangle text-warning fs-1 mb-3"></i>
+            <h4 class="text-muted">Pet Not Found</h4>
+            <p class="text-muted mb-4">Sorry, this pet is not available for appointments.</p>
+            <a href="/pets" class="btn btn-primary">
+              <i class="bi bi-arrow-left me-1"></i>Back to Pets
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% return; %>
+  <% } %>
+
+  <!-- Pet Information Card -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-3 text-center">
+              <% if (pet.image) { %>
+                <img src="<%= pet.image.startsWith('/') ? pet.image : '/images/animals/' + pet.image %>" 
+                     alt="<%= pet.name %>" class="img-fluid rounded-3 shadow appointment-pet-photo">
+              <% } else { %>
+                <div class="bg-light rounded-3 d-flex align-items-center justify-content-center shadow appointment-pet-placeholder">
+                  <i class="bi bi-heart text-muted fs-1"></i>
+                </div>
+              <% } %>
+            </div>
+            <div class="col-md-9">
+              <h2 class="text-primary mb-3 fw-bold">
+                <i class="bi bi-heart-fill me-2"></i><%= pet.name %>
+              </h2>
+              <div class="row">
+                <div class="col-md-3 mb-2">
+                  <small class="text-muted d-block">Type:</small>
+                  <span class="badge bg-<%= pet.type === 'Dog' ? 'primary' : pet.type === 'Cat' ? 'success' : 'warning' %> fs-6">
+                    <i class="bi bi-<%= pet.type === 'Dog' ? 'heart' : pet.type === 'Cat' ? 'heart-fill' : 'star' %> me-1"></i>
+                    <%= pet.type %>
+                  </span>
+                </div>
+                <div class="col-md-3 mb-2">
+                  <small class="text-muted d-block">Breed:</small>
+                  <strong class="text-dark"><%= pet.breed %></strong>
+                </div>
+                <div class="col-md-3 mb-2">
+                  <small class="text-muted d-block">Age:</small>
+                  <strong class="text-dark"><%= pet.age %> year<%= pet.age > 1 ? 's' : '' %></strong>
+                </div>
+                <div class="col-md-3 mb-2">
+                  <small class="text-muted d-block">Status:</small>
+                  <span class="badge bg-info">Available</span>
+                </div>
+              </div>
+              <% if (pet.description && pet.description.trim().length > 0) { %>
+                <div class="mt-3">
+                  <small class="text-muted d-block">About <%= pet.name %>:</small>
+                  <p class="text-dark mb-0"><%= pet.description %></p>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Appointment Booking Form -->
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow">
+        <div class="card-header bg-success text-white">
+          <h4 class="mb-0 fw-bold">
+            <i class="bi bi-calendar-plus me-2"></i>Select Date & Time
+          </h4>
+          <p class="mb-0 mt-1 opacity-75">Choose your preferred appointment slot</p>
+        </div>
+        <div class="card-body p-4">
+          <form id="bookingForm" method="POST" action="/appointments/schedule/<%= pet.id %>">
+            <div class="row">
+              <!-- Date Selection -->
+              <div class="col-md-6 mb-4">
+                <label for="appointmentDate" class="form-label fw-semibold">
+                  <i class="bi bi-calendar me-1"></i>Select Date <span class="text-danger">*</span>
+                </label>
+                <input type="date" 
+                       class="form-control form-control-lg" 
+                       id="appointmentDate" 
+                       name="appointmentDate" 
+                       required 
+                       min="<%= new Date().toISOString().split('T')[0] %>"
+                       max="2025-08-31">
+                <div class="form-text">Choose a date for your visit</div>
+              </div>
+
+              <!-- Time Selection -->
+              <div class="col-md-6 mb-4">
+                <label for="appointmentTime" class="form-label fw-semibold">
+                  <i class="bi bi-clock me-1"></i>Select Time <span class="text-danger">*</span>
+                </label>
+                <select class="form-select form-select-lg" 
+                        id="appointmentTime" 
+                        name="appointmentTime" 
+                        required 
+                        disabled>
+                  <option value="">First select a date</option>
+                </select>
+                <div class="form-text" id="timeSlotInfo">Available time slots will appear here</div>
+              </div>
+
+              <!-- Notes -->
+              <div class="col-12 mb-4">
+                <label for="notes" class="form-label fw-semibold">
+                  <i class="bi bi-chat-text me-1"></i>Additional Notes (Optional)
+                </label>
+                <textarea class="form-control" 
+                          id="notes" 
+                          name="notes" 
+                          rows="3" 
+                          placeholder="Any special requests or questions about <%= pet.name %>? (Optional)"></textarea>
+                <div class="form-text">Let us know if you have any special requirements</div>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-success btn-lg fw-bold" disabled id="submitBtn">
+                <i class="bi bi-calendar-check me-2"></i>Book Appointment with <%= pet.name %>
+              </button>
+              <a href="/pets/<%= pet.id %>" class="btn btn-outline-secondary">
+                <i class="bi bi-x-circle me-1"></i>Cancel
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Information Card -->
+      <div class="card border-0 shadow-sm mt-4">
+        <div class="card-body">
+          <h6 class="text-primary mb-3 fw-bold">
+            <i class="bi bi-info-circle me-2"></i>Appointment Information
+          </h6>
+          <div class="row">
+            <div class="col-md-6">
+              <ul class="list-unstyled mb-0">
+                <li class="mb-2">
+                  <i class="bi bi-clock text-success me-2"></i>
+                  <strong>Hours:</strong> 9:15 AM - 6:00 PM
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-calendar-check text-success me-2"></i>
+                  <strong>Duration:</strong> 30 minutes per appointment
+                </li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <ul class="list-unstyled mb-0">
+                <li class="mb-2">
+                  <i class="bi bi-clock-history text-primary me-2"></i>
+                  <strong>Arrive:</strong> 10 minutes early
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-telephone text-primary me-2"></i>
+                  <strong>Questions?</strong> Contact us anytime
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- JavaScript for Dynamic Time Slot Loading -->
+<script>
+(function() {
+  'use strict';
+  
+  /* ---------- CONFIGURATION ---------- */
+  const FETCH_TIMEOUT_MS = 8000;   // cancel request after 8s
+  
+  /* ---------- DOM REFERENCES ---------- */
+  const dateInput = document.querySelector('#appointmentDate');
+  const timeSelect = document.querySelector('#appointmentTime');
+  const submitBtn = document.querySelector('#submitBtn');
+  const timeSlotInfo = document.querySelector('#timeSlotInfo');
+  const bookingForm = document.querySelector('#bookingForm');
+  
+  /* ---------- PET DATA (SERVER-SIDE INJECTION) ---------- */
+  <% if (pet) { %>
+    const PET_ID = <%= pet.id %>;
+    const PET_NAME = '<%= pet.name.replace(/'/g, "\\'") %>';
+  <% } else { %>
+    console.warn('Pet data missing – booking disabled.');
+    disableBooking('No pet selected.');
+    return;
+  <% } %>
+
+  /* ---------- INITIALISE ---------- */
+  dateInput.min = new Date().toISOString().split('T')[0];
+  timeSelect.disabled = true;
+  submitBtn.disabled = true;
+  updateInfo('Select a date to view available times.');
+
+  /* ---------- EVENT LISTENERS ---------- */
+  dateInput.addEventListener('change', onDateChange);
+  timeSelect.addEventListener('change', onTimeChange);
+  bookingForm.addEventListener('submit', onFormSubmit);
+
+  /* ---------- HANDLERS ---------- */
+  async function onDateChange() {
+    const selectedDate = dateInput.value;
+    resetTimeSelect();
+
+    if (!selectedDate) {
+      updateInfo('Select a date to view available times.');
+      return;
+    }
+
+    updateInfo('Loading time slots…', 'info');
+    try {
+      const slots = await fetchSlots(selectedDate);
+      populateTimeSelect(slots);
+    } catch (err) {
+      console.error(err);
+      disableBooking('Could not load time slots. Try again.', 'danger');
+    }
+  }
+
+  function onTimeChange() {
+    const chosen = !!timeSelect.value;
+    submitBtn.disabled = !chosen;
+    submitBtn.innerHTML = chosen
+      ? `<i class="bi bi-calendar-check me-2"></i>Book ${formatTime(timeSelect.value)}`
+      : `<i class="bi bi-calendar-check me-2"></i>Book Appointment with ${PET_NAME}`;
+  }
+
+  function onFormSubmit(e) {
+    const date = dateInput.value;
+    const time = timeSelect.value;
+    
+    if (!date || !time) {
+      e.preventDefault();
+      alert('Please select both a date and a time.');
+      return;
+    }
+
+    const confirmed = confirm(
+      `Confirm appointment with ${PET_NAME}?\n\n` +
+      `📅 ${formatDateLong(date)}\n🕐 ${formatTime(time)}`
+    );
+    
+    if (!confirmed) {
+      e.preventDefault();
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Booking…';
+  }
+
+  /* ---------- FETCH HELPERS ---------- */
+  async function fetchSlots(date) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+    try {
+      const res = await fetch(`/availableSlots?date=${date}&petId=${PET_ID}`, {
+        signal: controller.signal
+      });
+      clearTimeout(timeout);
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (error) {
+      clearTimeout(timeout);
+      throw error;
+    }
+  }
+
+  /* ---------- UI HELPERS ---------- */
+  function populateTimeSelect(slots) {
+    timeSelect.innerHTML = '';
+    
+    if (!slots.length) {
+      disableBooking('No slots on this date. Choose another.', 'warning');
+      return;
+    }
+    
+    const opts = ['<option value="">Select a time</option>'];
+    slots.forEach(slot => {
+      opts.push(`<option value="${slot}">${formatTime(slot)}</option>`);
+    });
+    
+    timeSelect.innerHTML = opts.join('');
+    timeSelect.disabled = false;
+    updateInfo(`${slots.length} slot${slots.length > 1 ? 's' : ''} available.`, 'success');
+  }
+
+  function resetTimeSelect() {
+    timeSelect.innerHTML = '<option value="">Loading…</option>';
+    timeSelect.disabled = true;
+    submitBtn.disabled = true;
+  }
+
+  function disableBooking(msg, context = 'secondary') {
+    timeSelect.disabled = true;
+    submitBtn.disabled = true;
+    updateInfo(msg, context);
+  }
+
+  function updateInfo(text, context = 'muted') {
+    timeSlotInfo.textContent = text;
+    timeSlotInfo.className = `form-text text-${context}`;
+  }
+
+  /* ---------- FORMATTERS ---------- */
+  function formatTime(timeString) {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const hour12 = ((hours + 11) % 12) + 1;
+    return `${String(hour12).padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+  }
+
+  function formatDateLong(isoDate) {
+    return new Date(isoDate).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+})();
+</script>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">

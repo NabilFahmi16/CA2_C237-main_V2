@@ -1,0 +1,49 @@
+<div class="container py-5">
+
+
+  <% if (pet) { %>
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class=" rounded-4 border-0">
+          <div class="row g-0">
+            <div class="col-md-6 d-flex align-items-center justify-content-center bg-light rounded-start" style="min-height:350px;">
+              <% if (pet.image) { %>
+                <img src="<%= pet.image %>" class="img-fluid rounded-4 shadow" alt="<%= pet.name %>" style="object-fit:cover; aspect-ratio:1/1; max-height:320px; max-width:100%;">
+              <% } else { %>
+                <div class="d-flex align-items-center justify-content-center w-100" style="height: 320px;">
+                  <p class="text-muted">No image available</p>
+                </div>
+              <% } %>
+            </div>
+            <div class="col-md-6">
+              <div class="card-body px-4 py-4">
+                <h2 class="card-title fw-bold mb-3"><%= pet.name %></h2>
+                <ul class="list-group list-group-flush mb-3">
+                  <li class="list-group-item"><strong>Type:</strong> <%= pet.type.charAt(0).toUpperCase() + pet.type.slice(1) %></li>
+                  <li class="list-group-item"><strong>Breed:</strong> <%= pet.breed %></li>
+                  <li class="list-group-item"><strong>Age:</strong> <%= pet.age %> years</li>
+                  <li class="list-group-item"><strong>Description:</strong> <%= pet.description || 'No description available' %></li>
+                </ul>
+                <div class="d-flex flex-column gap-2">
+                  <% if (user && !user.admin) { %>
+                    <a href="/appointments/schedule/<%= pet.id %>" class="btn btn-success fw-bold">Apply for Adoption</a>
+                  <% } else { %>
+                    <p class="text-muted">Please <a href="/login">log in</a> to apply for adoption.</p>
+                  <% } %>
+                  <a href="/pets" class="btn btn-outline-secondary">Back to Pets</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% } else { %>
+    <div class="row">
+      <div class="col-12 text-center">
+        <p class="text-danger">Pet not found.</p>
+        <a href="/pets" class="btn btn-outline-secondary">Back to Pets</a>
+      </div>
+    </div>
+  <% } %>
+</div>

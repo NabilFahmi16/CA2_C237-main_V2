@@ -1,0 +1,50 @@
+<div class="container py-5">
+  <h1 class="text-center mb-4">🐾 Browse Adoptable Pets</h1>
+
+  <!-- Filter, Search, and Sort Controls -->
+  <form class="row align-items-end g-3 mb-4" method="get" action="/pets">
+    <div class="col-12 col-md-6">
+      <div class="btn-group mb-2" role="group">
+        <a href="/pets" class="btn btn-outline-secondary <%= !filter ? 'active' : '' %>">All</a>
+        <a href="/pets?type=dog" class="btn btn-outline-secondary <%= filter === 'dog' ? 'active' : '' %>">Dog</a>
+        <a href="/pets?type=cat" class="btn btn-outline-secondary <%= filter === 'cat' ? 'active' : '' %>">Cat</a>
+        <a href="/pets?type=other" class="btn btn-outline-secondary <%= filter === 'other' ? 'active' : '' %>">Other</a>
+      </div>
+      <div class="mt-2">
+        <select class="form-select w-auto" name="sort" onchange="this.form.submit()">
+          <option value="">Sort By</option>
+          <option value="oldest" <%= sort === 'oldest' ? 'selected' : '' %>>Oldest</option>
+          <option value="youngest" <%= sort === 'youngest' ? 'selected' : '' %>>Youngest</option>
+          <option value="az" <%= sort === 'az' ? 'selected' : '' %>>A-Z</option>
+          <option value="za" <%= sort === 'za' ? 'selected' : '' %>>Z-A</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-12 col-md-6">
+    <div class="input-group" style="max-width: 320px; margin-left: auto;">
+      <input type="text" id="search" name="search" class="form-control form-control-sm" placeholder="Search by name" value="<%= search || '' %>">
+      <button class="btn btn-primary btn-sm" type="submit">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </div>
+  </form>
+
+  <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+    <% if (pets.length > 0) { %>
+      <% pets.forEach(pet => { %>
+        <div class="col d-flex justify-content-center">
+          <a href="/pets/<%= pet.id %>" class="text-decoration-none w-100" style="max-width: 220px;">
+            <div class="d-flex flex-column align-items-center">
+              <img src="<%= pet.image %>" alt="<%= pet.name %>" style="width: 200px; height: 200px; object-fit: cover; border-radius:10px;">
+              <h4 class="fw-bold text-dark text-center mt-3 mb-0"><%= pet.name %></h4>
+            </div>
+          </a>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <div class="col-12 text-center"><p>No pets found.</p></div>
+    <% } %>
+  </div>
+</div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
